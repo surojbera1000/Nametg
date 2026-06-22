@@ -14,7 +14,7 @@ Optional:
 import os
 
 # Token from @BotFather. NEVER hardcode this in the file.
-TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+TOKEN = os.environ.get("7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc", "").strip()
 
 # The two names the bot toggles between.
 REAL_NAME = os.environ.get("REAL_NAME", "My Real Bot Name").strip()
