@@ -26,12 +26,22 @@ Tapping a button sends a **callback query**; the bot answers it and calls
 
 | File | Responsibility |
 |------|----------------|
-| `config.py` | Settings read from environment variables |
+| `config.py` | Settings; auto-loads `.env` from this folder |
 | `telegram_api.py` | Thin Bot API wrapper (`urllib`) |
 | `keyboards.py` | Colourful inline keyboards |
 | `name_manager.py` | Functions that change/read the bot name |
 | `handlers.py` | Message and callback handlers |
 | `bot.py` | Polling loop / entry point |
+| `tests/test_bot.py` | Automated tests (mock the API, no internet needed) |
+
+## Tests
+
+The logic is covered by an automated test suite that mocks the Telegram API, so
+it runs anywhere without a token or internet:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
 
 ## Setup (only ONE place to configure)
 

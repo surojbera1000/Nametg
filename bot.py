@@ -3,7 +3,7 @@
 
 Setup (only ONE place to configure):
     1. Copy .env.example to .env  (in this same folder)
-    2. Put your token in .env:     TELEGRAM_BOT_TOKEN="7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc"
+    2. Put your token in .env:     TELEGRAM_BOT_TOKEN=123456:ABC-...
     3. Run:                         python3 bot.py
 
 No `export` is needed anywhere — config.py loads .env automatically.
@@ -13,7 +13,7 @@ between the configured real and fake names. Uses long polling and only the
 Python standard library — no dependencies to install.
 
 Project layout:
-    config.py        - settings read from environment variables
+    config.py        - settings (loads .env automatically)
     telegram_api.py  - thin Bot API wrapper (urllib)
     keyboards.py     - colourful inline keyboards
     name_manager.py  - functions that change/read the bot name
@@ -29,26 +29,38 @@ import handlers
 import telegram_api
 
 
-def main():
+def run():
     if not config.TOKEN:
         sys.exit(
             "ERROR: TELEGRAM_BOT_TOKEN is not set.\n"
             "Create a file named '.env' in this folder (copy .env.example) and put:\n"
-             TELEGRAM_BOT_TOKEN="7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc"
+            "    TELEGRAM_BOT_TOKEN=123456:ABC-your-token-here"
         )
 
     me = telegram_api.get_me()
     if not me.get("ok"):
         sys.exit("ERROR: token check failed: {}".format(me.get("description")))
 
-    print("Bot @{} is running. Press Ctrl+C to stop.".format(me["result"].get("username", "?")))
+    username = me["result"].get("username", "?")
+
+    # Remove any leftover webhook, otherwise getUpdates returns 409 Conflict
+    # and the bot silently never receives messages.
+    telegram_api.delete_webhook()
+
+    print("Bot @{} is running. Press Ctrl+C to stop.".format(username))
     print('Real name: "{}"  |  Fake name: "{}"'.format(config.REAL_NAME, config.FAKE_NAME))
 
     offset = None
     while True:
         resp = telegram_api.get_updates(offset=offset)
+
         if not resp.get("ok"):
-            print("getUpdates error: {}".format(resp.get("description")))
+            # 409 means another instance / a webhook is grabbing updates.
+            if resp.get("error_code") == 409:
+                print("Conflict (409): another instance or a webhook is active. "
+                      "Stop it, or this bot will keep retrying.")
+            else:
+                print("getUpdates error: {}".format(resp.get("description")))
             time.sleep(3)
             continue
 
@@ -62,6 +74,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        run()
     except KeyboardInterrupt:
         print("\nStopped.")

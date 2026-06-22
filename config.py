@@ -13,18 +13,21 @@ automatically loads ".env" from here.
 import os
 
 
-def _load_dotenv():
-    """Load key=value pairs from a `.env` file next to this module.
+def load_dotenv(path=None):
+    """Load key=value pairs from a `.env` file into os.environ.
 
     Pure standard library — no external dependency. Values already present in
-    the real environment take priority (so you can still override at runtime).
-    Lines that are blank or start with '#' are ignored.
+    the real environment take priority. Blank lines and '#' comments are
+    ignored. Returns a dict of the values that were loaded.
     """
-    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
-    if not os.path.isfile(env_path):
-        return
+    if path is None:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 
-    with open(env_path, "r", encoding="utf-8") as handle:
+    loaded = {}
+    if not os.path.isfile(path):
+        return loaded
+
+    with open(path, "r", encoding="utf-8") as handle:
         for raw_line in handle:
             line = raw_line.strip()
             if not line or line.startswith("#") or "=" not in line:
@@ -33,19 +36,25 @@ def _load_dotenv():
             key = key.strip()
             # Strip optional surrounding quotes from the value.
             value = value.strip().strip('"').strip("'")
-            if key and key not in os.environ:
+            if not key:
+                continue
+            loaded[key] = value
+            if key not in os.environ:
                 os.environ[key] = value
+    return loaded
 
 
-# Load the .env file before reading any settings.
-_load_dotenv()
+def reload():
+    """(Re)read settings from the environment. Returns nothing; sets globals."""
+    global TOKEN, REAL_NAME, FAKE_NAME
+    TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+    REAL_NAME = os.environ.get("REAL_NAME", "My Real Bot Name").strip()
+    FAKE_NAME = os.environ.get("FAKE_NAME", "My Fake Bot Name").strip()
 
-# Token from @BotFather (read from .env or the environment). Never hardcode it.
-TOKEN = os.environ.get("7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc", "").strip()
 
-# The two names the bot toggles between.
-REAL_NAME = os.environ.get("REAL_NAME", "My Real Bot Name").strip()
-FAKE_NAME = os.environ.get("FAKE_NAME", "My Fake Bot Name").strip()
+# Load the .env file, then read settings from the environment.
+load_dotenv()
+reload()
 
 # Base URL template for every Bot API call.
 API_BASE = "https://api.telegram.org/bot{token}/{method}"
