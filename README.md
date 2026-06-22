@@ -6,7 +6,7 @@ Bot API method [`setMyName`](https://core.telegram.org/bots/api#setmyname).
 
 - **No dependencies** — pure Python 3 standard library (long polling).
 - **Modular** — each concern lives in its own file.
-- Token and names are read from environment variables (never hardcoded).
+- **One place to configure** — a single `.env` file in this folder. No `export` needed.
 
 ## Buttons
 
@@ -33,18 +33,24 @@ Tapping a button sends a **callback query**; the bot answers it and calls
 | `handlers.py` | Message and callback handlers |
 | `bot.py` | Polling loop / entry point |
 
-## Setup
+## Setup (only ONE place to configure)
 
 1. Create a bot with [@BotFather](https://t.me/BotFather) and copy the token.
-2. Configure environment variables (copy `.env.example` to `.env` and edit):
+2. In this folder, copy `.env.example` to `.env` and put your token in it:
 
    ```bash
-   export TELEGRAM_BOT_TOKEN="123456:ABC-your-token-here"
-   export REAL_NAME="My Real Bot"
-   export FAKE_NAME="My Fake Bot"
+   cp .env.example .env
    ```
 
-3. Run it:
+   Then edit `.env`:
+
+   ```
+   TELEGRAM_BOT_TOKEN=123456:ABC-your-token-here
+   REAL_NAME=My Real Bot
+   FAKE_NAME=My Fake Bot
+   ```
+
+3. Run it — **no `export` needed anywhere**, the bot loads `.env` automatically:
 
    ```bash
    python3 bot.py
@@ -52,11 +58,29 @@ Tapping a button sends a **callback query**; the bot answers it and calls
 
 4. In Telegram, open a chat with your bot, send `/start`, and tap the buttons.
 
+### Running on a VPS (keep it alive)
+
+The `.env` file is the only thing you configure. To keep the bot running after
+you log out, use one of these:
+
+```bash
+# simplest: run in background, logs to bot.log
+nohup python3 bot.py > bot.log 2>&1 &
+```
+
+Or with `screen` / `tmux`:
+
+```bash
+screen -S nametg
+python3 bot.py
+# press Ctrl+A then D to detach; `screen -r nametg` to return
+```
+
 ## Security
 
-Never commit your bot token. The token is read from `TELEGRAM_BOT_TOKEN`, and
-`.env` is git-ignored. If a token is ever exposed, revoke it in @BotFather
-(`/revoke`) and generate a new one.
+Never commit your bot token. It lives only in your local `.env` file, which is
+git-ignored and never pushed. If a token is ever exposed, revoke it in
+@BotFather (`/revoke`) and generate a new one.
 
 ## Important: rate limits
 

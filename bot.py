@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Entry point for the Telegram name-switcher bot.
 
-Run with:
-    export TELEGRAM_BOT_TOKEN="7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc"   # from @BotFather
-    export REAL_NAME="My Real Bot"               # optional
-    export FAKE_NAME="My Fake Bot"               # optional
-    python3 bot.py
+Setup (only ONE place to configure):
+    1. Copy .env.example to .env  (in this same folder)
+    2. Put your token in .env:     TELEGRAM_BOT_TOKEN=123456:ABC-...
+    3. Run:                         python3 bot.py
+
+No `export` is needed anywhere — config.py loads .env automatically.
 
 The bot shows colourful inline buttons to switch its public display name
 between the configured real and fake names. Uses long polling and only the
@@ -32,8 +33,8 @@ def main():
     if not config.TOKEN:
         sys.exit(
             "ERROR: TELEGRAM_BOT_TOKEN is not set.\n"
-            "Get a token from @BotFather and run:\n"
-            '    export TELEGRAM_BOT_TOKEN="123456:ABC-..."'
+            "Create a file named '.env' in this folder (copy .env.example) and put:\n"
+            "    TELEGRAM_BOT_TOKEN=123456:ABC-your-token-here"
         )
 
     me = telegram_api.get_me()

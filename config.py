@@ -1,20 +1,47 @@
 """Configuration for the Telegram name-switcher bot.
 
-All sensitive / environment-specific values are read from environment
-variables so nothing secret is ever committed to the repository.
+You only need ONE place for your secret: a file named ".env" in this same
+folder. Nothing needs to be exported in the shell. When the bot starts it
+automatically loads ".env" from here.
 
-Required:
-    TELEGRAM_BOT_TOKEN  - token from @BotFather
-
-Optional:
-    REAL_NAME           - the "real" display name (default below)
-    FAKE_NAME           - the "fake" display name (default below)
+.env example (copy from .env.example):
+    TELEGRAM_BOT_TOKEN=123456:ABC-your-token-here
+    REAL_NAME=My Real Bot Name
+    FAKE_NAME=My Fake Bot Name
 """
 
 import os
 
-# Token from @BotFather. NEVER hardcode this in the file.
-TOKEN = os.environ.get("7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc", "").strip()
+
+def _load_dotenv():
+    """Load key=value pairs from a `.env` file next to this module.
+
+    Pure standard library — no external dependency. Values already present in
+    the real environment take priority (so you can still override at runtime).
+    Lines that are blank or start with '#' are ignored.
+    """
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.isfile(env_path):
+        return
+
+    with open(env_path, "r", encoding="utf-8") as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            # Strip optional surrounding quotes from the value.
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+
+# Load the .env file before reading any settings.
+_load_dotenv()
+
+# Token from @BotFather (read from .env or the environment). Never hardcode it.
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 
 # The two names the bot toggles between.
 REAL_NAME = os.environ.get("REAL_NAME", "My Real Bot Name").strip()
