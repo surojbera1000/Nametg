@@ -1,36 +1,47 @@
 # Telegram Name-Switcher Bot
 
-A tiny Telegram bot that switches its **public display name** between a "real"
-name and a "fake" name using **inline-button callbacks** and the Telegram Bot
-API method [`setMyName`](https://core.telegram.org/bots/api#setmyname).
+A Telegram bot that switches its **public display name** between a "real" name
+and a "fake" name using **colourful inline-button callbacks** and the Telegram
+Bot API method [`setMyName`](https://core.telegram.org/bots/api#setmyname).
 
-- **No dependencies** — pure Python 3 standard library (uses long polling).
-- Reads the bot token and the two names from environment variables.
+- **No dependencies** — pure Python 3 standard library (long polling).
+- **Modular** — each concern lives in its own file.
+- Token and names are read from environment variables (never hardcoded).
 
-## How it works
+## Buttons
 
-1. The bot sends a message with three inline buttons:
+```
+[ 🟢 Real Name ] [ 🔴 Fake Name ]
+[ 🔵 Show Current Name ]
+```
 
-   ```
-   [ Set Real Name ] [ Set Fake Name ]
-   [ Show current name ]
-   ```
+Tapping a button sends a **callback query**; the bot answers it and calls
+`setMyName` (or `getMyName` for "Show Current Name").
 
-2. Tapping a button sends a **callback query** back to the bot
-   (`update.callback_query`).
-3. The bot acknowledges it with `answerCallbackQuery` and calls `setMyName`
-   to change the bot's public name. "Show current name" calls `getMyName`.
+> Note: Telegram doesn't allow bots to set custom button background colours, so
+> the buttons are made colourful with emoji icons that render in colour on all
+> clients.
+
+## Project structure
+
+| File | Responsibility |
+|------|----------------|
+| `config.py` | Settings read from environment variables |
+| `telegram_api.py` | Thin Bot API wrapper (`urllib`) |
+| `keyboards.py` | Colourful inline keyboards |
+| `name_manager.py` | Functions that change/read the bot name |
+| `handlers.py` | Message and callback handlers |
+| `bot.py` | Polling loop / entry point |
 
 ## Setup
 
-1. Talk to [@BotFather](https://t.me/BotFather) and create a bot, then copy the
-   token.
+1. Create a bot with [@BotFather](https://t.me/BotFather) and copy the token.
 2. Configure environment variables (copy `.env.example` to `.env` and edit):
 
    ```bash
    export TELEGRAM_BOT_TOKEN="123456:ABC-your-token-here"
    export REAL_NAME="My Real Bot"
-   export FAKE_NAME="Totally Innocent Bot"
+   export FAKE_NAME="My Fake Bot"
    ```
 
 3. Run it:
@@ -39,21 +50,18 @@ API method [`setMyName`](https://core.telegram.org/bots/api#setmyname).
    python3 bot.py
    ```
 
-4. In Telegram, open a chat with your bot and send `/start`, then tap the
-   buttons.
+4. In Telegram, open a chat with your bot, send `/start`, and tap the buttons.
+
+## Security
+
+Never commit your bot token. The token is read from `TELEGRAM_BOT_TOKEN`, and
+`.env` is git-ignored. If a token is ever exposed, revoke it in @BotFather
+(`/revoke`) and generate a new one.
 
 ## Important: rate limits
 
-Telegram **limits how often** you can change the bot name (a handful of times
-per hour). If you toggle too fast, Telegram returns HTTP 429
-("Too Many Requests"). The bot catches this and shows you a message like
-"Rate limited by Telegram. Try again in N seconds." instead of crashing.
-
-Also note: the name change is **global** for the bot — it is the name everyone
-sees, not a per-chat nickname. The new name can take a short moment to appear in
-all Telegram clients due to caching.
-
-## Files
-
-- `bot.py` — the bot.
-- `.env.example` — sample environment configuration.
+Telegram **limits how often** you can change the bot name (a few times per
+hour). Toggling too fast returns HTTP 429 ("Too Many Requests"); the bot shows
+"Rate limited by Telegram. Try again in N seconds." instead of crashing. The
+name change is **global** (everyone sees it) and may take a moment to propagate
+due to client caching.
