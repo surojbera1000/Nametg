@@ -2,7 +2,7 @@
 """Entry point for the Telegram name-switcher bot.
 
 Run with:
-    export TELEGRAM_BOT_TOKEN="123456:ABC-..."   # from @BotFather
+    export TELEGRAM_BOT_TOKEN="7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc"   # from @BotFather
     export REAL_NAME="My Real Bot"               # optional
     export FAKE_NAME="My Fake Bot"               # optional
     python3 bot.py
