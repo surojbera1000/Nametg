@@ -198,7 +198,7 @@ def main():
         sys.exit(
             "ERROR: TELEGRAM_BOT_TOKEN is not set.\n"
             "Get a token from @BotFather and run:\n"
-            '    export TELEGRAM_BOT_TOKEN="123456:ABC-..."'
+            '    export TELEGRAM_BOT_TOKEN="7984346452:AAHQCwFfLL07MrnIXukFjvrpXVPtwfRxafM"'
         )
 
     # Verify the token works before entering the loop.
