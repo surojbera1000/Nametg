@@ -34,7 +34,7 @@ def main():
         sys.exit(
             "ERROR: TELEGRAM_BOT_TOKEN is not set.\n"
             "Create a file named '.env' in this folder (copy .env.example) and put:\n"
-            "    TELEGRAM_BOT_TOKEN="7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc"
+             TELEGRAM_BOT_TOKEN="7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc"
         )
 
     me = telegram_api.get_me()
