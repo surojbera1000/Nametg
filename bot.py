@@ -3,7 +3,7 @@
 
 Setup (only ONE place to configure):
     1. Copy .env.example to .env  (in this same folder)
-    2. Put your token in .env:     TELEGRAM_BOT_TOKEN=7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc
+    2. Put your token in .env:     TELEGRAM_BOT_TOKEN="7984346452:AAEUSUJYDv84NvvZGfzeLzPShPWdM9FnGNc"
     3. Run:                         python3 bot.py
 
 No `export` is needed anywhere — config.py loads .env automatically.
