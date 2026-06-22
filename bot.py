@@ -18,7 +18,7 @@ Setup
 -----
 1. Create a bot with @BotFather and copy the token.
 2. Export the token (and optionally the names):
-       export TELEGRAM_BOT_TOKEN="123456:ABC-..."
+       export TELEGRAM_BOT_TOKEN="7984346452:AAHQCwFfLL07MrnIXukFjvrpXVPtwfRxafM"
        export REAL_NAME="My Real Bot"
        export FAKE_NAME="Totally Innocent Bot"
 3. Run it:
